@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <zookeepers>
+        <zookeeper>10.19.226.217:2181</zookeeper>
+        <zookeeper>10.19.226.185:2181</zookeeper>
+        <!-- <zookeeper>10.19.189.20:2181</zookeeper> -->
+    </zookeepers>
+    <ProjectName>SHIELDHUB</ProjectName>
+</config>

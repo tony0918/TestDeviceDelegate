@@ -7,8 +7,8 @@
 <!-- the Compile on Save feature is turned off for the project. -->
 <!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
 <!-- in the project's Project Properties dialog box.-->
-<project name="TestDevicesNanny" default="default" basedir=".">
-    <description>Builds, tests, and runs the project TestDevicesNanny.</description>
+<project name="TestDeviceDelegate" default="default" basedir=".">
+    <description>Builds, tests, and runs the project TestDeviceDelegate.</description>
     <import file="nbproject/build-impl.xml"/>
     <!--
 
@@ -58,7 +58,7 @@
 
     An example of overriding the target for project execution could look like this:
 
-        <target name="run" depends="TestDevicesNanny-impl.jar">
+        <target name="run" depends="TestDeviceDelegate-impl.jar">
             <exec dir="bin" executable="launcher.exe">
                 <arg file="${dist.jar}"/>
             </exec>
@@ -70,19 +70,4 @@
     nbproject/build-impl.xml file. 
 
     -->
-    <target name="-post-jar">
-        <jar jarfile="dist/TestDevicesNanny-0.1-alpha.jar">
-            <zipfileset src="${dist.jar}" excludes="META-INF/*" />
-            <zipfileset src="dist/lib/commons-lang3-3.3.2.jar" excludes="META-INF/*" />
-            <zipfileset src="dist/lib/dom4j-1.6.1.jar" excludes="META-INF/*" />
-            <zipfileset src="dist/lib/zookeeper-3.4.6.jar" excludes="META-INF/*" />
-            <zipfileset src="dist/lib/log4j-1.2.16.jar" excludes="META-INF/*" />
-            <zipfileset src="dist/lib/slf4j-api-1.6.1.jar" excludes="META-INF/*" />
-            <zipfileset src="dist/lib/slf4j-log4j12-1.6.1.jar" excludes="META-INF/*" />
-            <manifest>
-                <attribute name="Main-Class" value="${main.class}"/>
-            </manifest>
-        </jar>
-    </target>
-    
 </project>
