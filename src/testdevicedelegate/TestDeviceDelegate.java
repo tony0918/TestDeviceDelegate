@@ -5,9 +5,8 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zookeeper.CreateMode;
@@ -26,14 +25,15 @@ import org.dom4j.io.SAXReader;
 public class TestDeviceDelegate {
 
     private String projectName = null;
-    private String rootDir = "TestDeviceProjects";
+    private final String rootDir = "TestDeviceProjects";
     private ZooKeeper zk = null;
+    private Integer intervalTime = 60;
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-//
+        Date date = new Date();
         String configFilePath = null;
         for (int i = 0; i < args.length; i++) {
             if ("-config".equals(args[i])) {
@@ -46,6 +46,7 @@ public class TestDeviceDelegate {
                 try {
                     String hostname = InetAddress.getLocalHost().getHostName();
                     TestDeviceDelegate tdd = new TestDeviceDelegate(configFilePath);
+                    Integer interval = tdd.getIntervalTime();
                     if (null != tdd.getZK() && null != tdd.getProjectName()) {
                         while (true) {
                             String deviceId = tdd.GetDeviceNumber();
@@ -54,19 +55,19 @@ public class TestDeviceDelegate {
                             } else {
                                 tdd.CreateZnode(hostname, deviceId);
                             }
-                            Thread.sleep(60 * 1000);
+                            Thread.sleep(interval * 1000);
                         }
                     }
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                System.out.println("-- Lost ZooKeeper connection.");
+                System.out.println("[" + date.toString() + "] Lost ZooKeeper connection.");
             } else {
-                System.out.println("-- Can not find the config file.");
+                System.out.println("[" + date.toString() + "] Can not find the config file.");
             }
         } else {
-            System.out.println("-- Can not find the config file.");
+            System.out.println("[" + date.toString() + "] Can not find the config file.");
         }
 
         System.exit(0);
@@ -99,8 +100,14 @@ public class TestDeviceDelegate {
                 // Do nothing.
             }
         });
-        System.out.println(serverAddress);
+        Date date = new Date();
+        System.out.println("[" + date.toString() + "] ZooKeeper Server Addresses: " + serverAddress);
         this.projectName = root.elementText("ProjectName");
+
+        String interval = root.elementText("IntervalTime");
+        if (interval != null) {
+            this.intervalTime = Integer.parseInt(interval);
+        }
 
         return zk;
     }
@@ -135,22 +142,29 @@ public class TestDeviceDelegate {
             if (null != zk.exists(znode, false)) {
                 zk.delete(znode, -1);
             }
-            System.out.println("-- Delete: " + znode);
+            Date date = new Date();
+            System.out.println("[" + date.toString() + "] Delete: " + znode);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void CreateZnode(String hostname, String deviceId) {
-        String znode = "/" + rootDir + "/" + projectName + "/" + hostname;
+        String path[] = {rootDir, projectName, hostname};
+        String znode = "";
         try {
+            for (String dir : path) {
+                znode += "/" + dir;
+                if (null == zk.exists(znode, false)) {
+                    znode = zk.create(znode, "".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                }
+            }
+            znode += "/device";
             if (null == zk.exists(znode, false)) {
                 znode = zk.create(znode, deviceId.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
             }
-            if (null == zk.exists(znode + "/device", false)) {
-                znode = zk.create(znode + "/device", deviceId.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-            }
-            System.out.println("Create: " + znode);
+            Date date = new Date();
+            System.out.println("[" + date.toString() + "] Create: " + znode);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -159,6 +173,10 @@ public class TestDeviceDelegate {
 
     private String getProjectName() {
         return this.projectName;
+    }
+
+    private Integer getIntervalTime() {
+        return this.intervalTime;
     }
 
 }

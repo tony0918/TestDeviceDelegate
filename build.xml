@@ -71,7 +71,7 @@
 
     -->
     <target name="-post-jar">
-        <jar jarfile="dist/TestDevicesNanny-0.1-alpha.jar">
+        <jar jarfile="dist/TestDeviceDelegate-0.1-alpha.jar">
             <zipfileset src="${dist.jar}" excludes="META-INF/*" />
             <zipfileset src="dist/lib/commons-lang3-3.3.2.jar" excludes="META-INF/*" />
             <zipfileset src="dist/lib/dom4j-1.6.1.jar" excludes="META-INF/*" />

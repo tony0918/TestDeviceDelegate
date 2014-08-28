@@ -6,4 +6,5 @@
         <!-- <zookeeper>10.19.189.20:2181</zookeeper> -->
     </zookeepers>
     <ProjectName>SHIELDHUB</ProjectName>
+    <IntervalTime>30</IntervalTime>
 </config>
